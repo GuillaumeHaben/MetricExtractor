@@ -14,7 +14,9 @@ Java Code Metric Extractor
 ### Work in Progress
 
 - [ ] Explore control flow further until invoked method is no longer in the (a?) test class.
-- [ ] Refactor code
+- [ ] Add Depth of Inheritance metric
+- [x] Refactor code
+
 
 ### Authors
 
