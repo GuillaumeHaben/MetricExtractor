@@ -1,13 +1,15 @@
+import org.json.simple.JSONObject;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLoop;
-import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
-import java.lang.annotation.Annotation;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class Metric {
@@ -25,6 +27,7 @@ public class Metric {
         this.nbAsyncWaits = 0;
         this.nbAsserts = 0;
         this.depthOfInheritance = 0;
+        this.hasTimeOutInAnnotation = false;
     }
 
     public void showNbLines() {
@@ -108,4 +111,19 @@ public class Metric {
         }
     }
 
+    public void generateReport(String methodName, String className, String projectPath) throws IOException {
+        JSONObject sampleObject = new JSONObject();
+
+        sampleObject.put("ProjectName", projectPath);
+        sampleObject.put("ClassName", className);
+        sampleObject.put("MethodName", methodName);
+        sampleObject.put("NumberOfLines", this.nbLines);
+        sampleObject.put("CyclomaticComplexity", this.nbCyclo);
+        sampleObject.put("NumberOfAsynchronousWaits", this.nbAsyncWaits);
+        sampleObject.put("NumberOfAsserts", this.nbAsserts);
+        sampleObject.put("DepthOfInheritance", this.depthOfInheritance);
+        sampleObject.put("HasTimeoutInAnnotations", this.hasTimeOutInAnnotation);
+
+        Files.write(Paths.get("./results/" + className + "." + methodName + ".json"), sampleObject.toJSONString().getBytes());
+    }
 }

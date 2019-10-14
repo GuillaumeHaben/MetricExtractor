@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Menu {
@@ -5,7 +6,7 @@ public class Menu {
     String projectPath = "/Users/guillaume.haben/Documents/Work/projects/TooTallNate/Java-WebSocket/";
     // private String projectPath = "/Users/guillaume.haben/Documents/Work/projects/http-request/";
 
-    public Menu() {
+    public Menu() throws IOException {
         // Welcome
         System.out.println("########################");
         System.out.println("### Metric Extractor ###");
@@ -15,12 +16,12 @@ public class Menu {
         menuSelection();
     }
 
-    public void menuSelection() {
+    public void menuSelection() throws IOException {
         Scanner input = new Scanner(System.in);
         System.out.println("Select a type of search");
         System.out.println("------------------------\n");
         System.out.println("1 - Project search");
-        System.out.println("2 - Class search");
+        System.out.println("2 - List of Methods search");
         System.out.println("3 - Method search");
 
         // Check if input is int
@@ -38,8 +39,7 @@ public class Menu {
                 System.out.println("Work in Progress");
                 break;
             case 2:
-                System.out.println("2 selected");
-                System.out.println("Work in Progress");
+                search.listOfMethodSearch();
                 break;
             case 3:
                 search.methodSearch();

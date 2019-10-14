@@ -1,14 +1,9 @@
-import org.apache.commons.io.filefilter.FalseFileFilter;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLoop;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.filter.TypeFilter;
 
-import java.util.List;
+import java.io.*;
 import java.util.Scanner;
 
 public class Search {
@@ -45,29 +40,42 @@ public class Search {
         this.className = arrayName[arrayName.length - 2];
     }
 
-    public void methodSearch() {
+    public void getMethodFromFile(String fullName) {
+        String[] arrayName = fullName.split("\\.");
 
+        this.methodName = arrayName[arrayName.length - 1];
+        this.className = arrayName[arrayName.length - 2];
+    }
+
+    public void methodSearch() throws IOException {
+
+        getMethodFromUser();
+        singleMethodSearch();
+
+    }
+
+    public void singleMethodSearch() throws IOException {
         Boolean classFound = false;
         Boolean methodFound = false;
         Metric metric = new Metric();
 
-        getMethodFromUser();
-
         // For all classes
-        for(CtType<?> s : this.model.getAllTypes()) {
+        for(CtType<?> classes : this.model.getAllTypes()) {
             // Match class name
-            if (s.getSimpleName().equals(this.className)) {
+            if (classes.getSimpleName().equals(this.className)) {
                 classFound = true;
                 // For all methods
-                for(CtMethod t : s.getMethods()) {
+                for(CtMethod methods : classes.getMethods()) {
                     // Match method name
-                    if (t.getSimpleName().equals(this.methodName)) {
+                    if (methods.getSimpleName().equals(this.methodName)) {
                         methodFound = true;
 
-                        System.out.println("\nClass found: " + s.getSimpleName());
-                        System.out.println("Method found: " + t.getSimpleName());
+                        System.out.println("\nClass found: " + classes.getSimpleName());
+                        System.out.println("Method found: " + methods.getSimpleName());
 
-                        metric.computeMetrics(t, s);
+                        metric.computeMetrics(methods, classes);
+
+                        metric.generateReport(this.methodName, this.className.toString(), this.projectPath);
 
                         metric.showNbLines();
                         metric.showNbCyclo();
@@ -91,13 +99,33 @@ public class Search {
         }
     }
 
-    public static void classSearch() {
 
+    public void listOfMethodSearch() throws IOException {
+
+        // Ask for file path
+        Scanner myObj = new Scanner(System.in);
+        System.out.println("Enter path to file with methods list inside");
+        String path = myObj.nextLine();
+
+        File file = new File(path);
+
+        // Check if file exists
+        if (!file.exists()) {
+            System.out.println("File not found, please enter absolute path.");
+            listOfMethodSearch();
+        }
+        else {
+
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            String st;
+            while ((st = br.readLine()) != null) {
+                System.out.println(st);
+                Search currentSearch = new Search(this.projectPath);
+                currentSearch.getMethodFromFile(st);
+                currentSearch.singleMethodSearch();
+            }
+        }
     }
-
-    public static void projectSearch() {
-
-    }
-
 
 }

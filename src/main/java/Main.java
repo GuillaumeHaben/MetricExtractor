@@ -1,18 +1,8 @@
-import spoon.Launcher;
-import spoon.reflect.CtModel;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLoop;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.visitor.filter.TypeFilter;
-
-import java.util.List;
-import java.util.Scanner;
+import java.io.IOException;
 
 public class Main {
 
-    public static void main(String [] args){
+    public static void main(String [] args) throws IOException {
         Menu menu = new Menu();
     }
 
