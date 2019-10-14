@@ -1,6 +1,9 @@
 import java.util.Scanner;
 
 public class Menu {
+    // [Dev] Hard coded project path
+    String projectPath = "/Users/guillaume.haben/Documents/Work/projects/TooTallNate/Java-WebSocket/";
+    // private String projectPath = "/Users/guillaume.haben/Documents/Work/projects/http-request/";
 
     public Menu() {
         // Welcome
@@ -12,7 +15,7 @@ public class Menu {
         menuSelection();
     }
 
-    public static void menuSelection() {
+    public void menuSelection() {
         Scanner input = new Scanner(System.in);
         System.out.println("Select a type of search");
         System.out.println("------------------------\n");
@@ -27,10 +30,8 @@ public class Menu {
         }
 
         int selection = input.nextInt();
-        // [Dev] Hard coded project path
-        String projectPath = "/Users/guillaume.haben/Documents/Work/projects/TooTallNate/Java-WebSocket/";
-        Search search = new Search(projectPath);
-        System.out.println("Analyzing project: " + projectPath);
+        Search search = new Search(this.projectPath);
+        System.out.println("\nAnalyzing project: " + this.projectPath);
         switch (selection) {
             case 1:
                 System.out.println("1 selected");

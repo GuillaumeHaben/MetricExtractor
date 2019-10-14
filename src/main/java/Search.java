@@ -37,16 +37,12 @@ public class Search {
     public void getMethodFromUser() {
         // ToDo Add checkers
         Scanner myObj = new Scanner(System.in);
-        System.out.println("Enter flaky method name");
+        System.out.println("Enter method you want to analyze [format: className.methodName]");
         String fullName = myObj.nextLine();
         String[] arrayName = fullName.split("\\.");
 
         this.methodName = arrayName[arrayName.length - 1];
         this.className = arrayName[arrayName.length - 2];
-
-        System.out.println("methodName: " + this.methodName);
-        System.out.println("className: " + this.className);
-
     }
 
     public void methodSearch() {
@@ -68,15 +64,17 @@ public class Search {
                     if (t.getSimpleName().equals(this.methodName)) {
                         methodFound = true;
 
-                        System.out.println("Class found: " + s.getSimpleName());
+                        System.out.println("\nClass found: " + s.getSimpleName());
                         System.out.println("Method found: " + t.getSimpleName());
 
-                        metric.computeMetrics(t);
+                        metric.computeMetrics(t, s);
 
                         metric.showNbLines();
-                        metric.showAnnotations();
                         metric.showNbCyclo();
-                        metric.showAsyncWaits();
+                        metric.showNbAsyncWaits();
+                        metric.showNbAsserts();
+                        metric.showDepthOfInheritance();
+                        metric.showAnnotations();
 
                     }
                 }
@@ -100,5 +98,6 @@ public class Search {
     public static void projectSearch() {
 
     }
+
 
 }
