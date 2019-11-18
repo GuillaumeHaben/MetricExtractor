@@ -7,6 +7,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -67,8 +68,9 @@ public class Metric {
         // Compute nbAsyncWaits and nbAsserts
         List listInvocations = method.getBody().getElements(new TypeFilter(CtInvocation.class));
 
-
         for (Object inv : listInvocations) {
+
+
             String invocation = inv.toString();
             if (invocation.contains("Thread.sleep(") || invocation.contains(".wait(")) {
                 this.nbAsyncWaits++;
@@ -124,6 +126,10 @@ public class Metric {
         sampleObject.put("DepthOfInheritance", this.depthOfInheritance);
         sampleObject.put("HasTimeoutInAnnotations", this.hasTimeOutInAnnotation);
 
-        Files.write(Paths.get("./results/" + className + "." + methodName + ".json"), sampleObject.toJSONString().getBytes());
+        String[] arrayName = projectPath.split("/");
+        String projectName = arrayName[arrayName.length - 1];
+        new File("./results/" + projectName).mkdirs();
+
+        Files.write(Paths.get("./results/" + projectName + "/" + className + "." + methodName + ".json"), sampleObject.toJSONString().getBytes());
     }
 }

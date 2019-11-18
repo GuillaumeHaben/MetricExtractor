@@ -3,8 +3,9 @@ import java.util.Scanner;
 
 public class Menu {
     // [Dev] Hard coded project path
-    String projectPath = "/Users/guillaume.haben/Documents/Work/projects/TooTallNate/Java-WebSocket/";
-    // private String projectPath = "/Users/guillaume.haben/Documents/Work/projects/http-request/";
+    String projectPath = "/Users/guillaume.haben/Documents/Work/projects/alibaba/fastjson/";
+    // String projectPath = "/Users/guillaume.haben/Documents/Work/projects/TooTallNate/Java-WebSocket/";
+    // String projectPath = "/Users/guillaume.haben/Documents/Work/projects/http-request/";
 
     public Menu() throws IOException {
         // Welcome
@@ -20,13 +21,12 @@ public class Menu {
         Scanner input = new Scanner(System.in);
         System.out.println("Select a type of search");
         System.out.println("------------------------\n");
-        System.out.println("1 - Project search");
-        System.out.println("2 - List of Methods search");
-        System.out.println("3 - Method search");
+        System.out.println("1 - List of Methods search");
+        System.out.println("2 - Method search");
 
         // Check if input is int
         if(!input.hasNextInt()) {
-            System.out.println("Please select between [1-3]");
+            System.out.println("Please select between [1-2]");
             menuSelection();
         }
 
@@ -35,17 +35,13 @@ public class Menu {
         System.out.println("\nAnalyzing project: " + this.projectPath);
         switch (selection) {
             case 1:
-                System.out.println("1 selected");
-                System.out.println("Work in Progress");
-                break;
-            case 2:
                 search.listOfMethodSearch();
                 break;
-            case 3:
-                search.methodSearch();
+            case 2:
+                search.singleMethodSearch();
                 break;
             default:
-                System.out.println("Please select between [1-3]");
+                System.out.println("Please select between [1-2]");
                 menuSelection();
         }
     }

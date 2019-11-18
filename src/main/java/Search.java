@@ -23,13 +23,14 @@ public class Search {
         Launcher launcher = new Launcher();
         launcher.addInputResource(this.projectPath);
 
-        // Creating model
+        // Creating model from project
         launcher.buildModel();
         CtModel model = launcher.getModel();
         return model;
     }
 
-    public void getMethodFromUser() {
+    public void singleMethodSearch() throws IOException {
+
         // ToDo Add checkers
         Scanner myObj = new Scanner(System.in);
         System.out.println("Enter method you want to analyze [format: className.methodName]");
@@ -38,23 +39,40 @@ public class Search {
 
         this.methodName = arrayName[arrayName.length - 1];
         this.className = arrayName[arrayName.length - 2];
+
+        methodSearch();
+
     }
 
-    public void getMethodFromFile(String fullName) {
-        String[] arrayName = fullName.split("\\.");
+    public void listOfMethodSearch() throws IOException {
 
-        this.methodName = arrayName[arrayName.length - 1];
-        this.className = arrayName[arrayName.length - 2];
+        // Ask for file path
+        Scanner myObj = new Scanner(System.in);
+        System.out.println("Enter path to file with methods list inside");
+        String path = myObj.nextLine();
+
+        File file = new File(path);
+
+        // Check if file exists
+        if (!file.exists()) {
+            System.out.println("File not found, please enter absolute path.");
+            listOfMethodSearch();
+        }
+        else {
+
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            String st;
+            while ((st = br.readLine()) != null) {
+                System.out.println(st);
+                Search currentSearch = new Search(this.projectPath);
+                currentSearch.getMethodFromFile(st);
+                currentSearch.methodSearch();
+            }
+        }
     }
 
     public void methodSearch() throws IOException {
-
-        getMethodFromUser();
-        singleMethodSearch();
-
-    }
-
-    public void singleMethodSearch() throws IOException {
         Boolean classFound = false;
         Boolean methodFound = false;
         Metric metric = new Metric();
@@ -91,41 +109,17 @@ public class Search {
         // Error handlers
         if (!classFound) {
             System.out.println("No class \"" + this.className + "\" found.");
-            methodSearch();
         }
         if (classFound && !methodFound) {
             System.out.println("No Method \"" + this.methodName + "\" found in class \"" + this.className + "\".");
-            methodSearch();
         }
     }
 
-
-    public void listOfMethodSearch() throws IOException {
-
-        // Ask for file path
-        Scanner myObj = new Scanner(System.in);
-        System.out.println("Enter path to file with methods list inside");
-        String path = myObj.nextLine();
-
-        File file = new File(path);
-
-        // Check if file exists
-        if (!file.exists()) {
-            System.out.println("File not found, please enter absolute path.");
-            listOfMethodSearch();
-        }
-        else {
-
-            BufferedReader br = new BufferedReader(new FileReader(file));
-
-            String st;
-            while ((st = br.readLine()) != null) {
-                System.out.println(st);
-                Search currentSearch = new Search(this.projectPath);
-                currentSearch.getMethodFromFile(st);
-                currentSearch.singleMethodSearch();
-            }
-        }
+    public void getMethodFromFile(String fullName) {
+        // ToDo Add checkers
+        String[] arrayName = fullName.split("\\.");
+        this.methodName = arrayName[arrayName.length - 1];
+        this.className = arrayName[arrayName.length - 2];
     }
 
 }
