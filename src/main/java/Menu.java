@@ -35,7 +35,7 @@ public class Menu {
         System.out.println("\nAnalyzing project: " + this.projectPath);
         switch (selection) {
             case 1:
-                search.listOfMethodSearch();
+                search.listOfMethodSearch("");
                 break;
             case 2:
                 search.singleMethodSearch();

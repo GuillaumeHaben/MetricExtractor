@@ -34,6 +34,10 @@ The ultimate goal is to use those features as metrics to associate a method
 - [x] Add Search by list of methods
 - [x] Add Depth of Inheritance metric
 
+### Miscellaneous
+
+- Command to run the program: `./metricExtractor.sh -projectPath ... -listPath ...`.
+- Get the classpath is correct by running `mvn dependency:build-classpath -Dmdep.outputFile=tmpCp.txt`
 
 ### Authors
 
