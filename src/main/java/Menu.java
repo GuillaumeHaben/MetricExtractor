@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class Menu {
     // [Dev] Hard coded project path
-    String projectPath = "/Users/guillaume.haben/Documents/Work/projects/alibaba/fastjson/";
+    String projectPath = "/Users/guillaume.haben/Documents/Work/datasets/DeFlaker/projects/jackrabbit-oak/oak-jcr";
     // String projectPath = "/Users/guillaume.haben/Documents/Work/projects/TooTallNate/Java-WebSocket/";
     // String projectPath = "/Users/guillaume.haben/Documents/Work/projects/http-request/";
 

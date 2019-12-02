@@ -122,6 +122,7 @@ public class Search {
                         metric.showNbCyclo();
                         metric.showNbAsyncWaits();
                         metric.showNbAsserts();
+                        metric.showNbThreads();
                         metric.showDepthOfInheritance();
                         metric.showAnnotations();
 

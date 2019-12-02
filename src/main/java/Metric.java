@@ -1,7 +1,5 @@
 import org.json.simple.JSONObject;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLoop;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
@@ -20,6 +18,7 @@ public class Metric {
     private int nbCyclo;
     private int nbAsyncWaits;
     private int nbAsserts;
+    private int nbThreads;
     private int depthOfInheritance;
 
     public Metric() {
@@ -27,6 +26,7 @@ public class Metric {
         this.nbCyclo = 0;
         this.nbAsyncWaits = 0;
         this.nbAsserts = 0;
+        this.nbThreads = 0;
         this.depthOfInheritance = 0;
         this.hasTimeOutInAnnotation = false;
     }
@@ -51,6 +51,10 @@ public class Metric {
         System.out.println("Number of Asserts: " + this.nbAsserts);
     }
 
+    public void showNbThreads() {
+        System.out.println("Number of Threads: " + this.nbThreads);
+    }
+
     public void showDepthOfInheritance() {
         System.out.println("Depth of Inheritance: " + this.depthOfInheritance);
     }
@@ -70,7 +74,6 @@ public class Metric {
 
         for (Object inv : listInvocations) {
 
-
             String invocation = inv.toString();
             if (invocation.contains("Thread.sleep(") || invocation.contains(".wait(")) {
                 this.nbAsyncWaits++;
@@ -87,6 +90,19 @@ public class Metric {
                     invocation.contains("assertThat(") ||
                     invocation.contains("fail(") ) {
                 this.nbAsserts++;
+            }
+        }
+
+
+        // Compute nbThreads
+        List listConstructorCalls = method.getBody().getElements(new TypeFilter(CtConstructorCall.class));
+
+        for (Object inv : listConstructorCalls) {
+
+            String invocation = inv.toString();
+
+            if (invocation.contains("Thread(")) {
+                this.nbThreads++;
             }
         }
 
@@ -123,6 +139,7 @@ public class Metric {
         sampleObject.put("CyclomaticComplexity", this.nbCyclo);
         sampleObject.put("NumberOfAsynchronousWaits", this.nbAsyncWaits);
         sampleObject.put("NumberOfAsserts", this.nbAsserts);
+        sampleObject.put("NumberOfThreads", this.nbThreads);
         sampleObject.put("DepthOfInheritance", this.depthOfInheritance);
         sampleObject.put("HasTimeoutInAnnotations", this.hasTimeOutInAnnotation);
 
