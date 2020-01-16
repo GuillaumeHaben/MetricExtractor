@@ -1,9 +1,11 @@
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Menu {
     // [Dev] Hard coded project path
-    String projectPath = "/Users/guillaume.haben/Documents/Work/datasets/DeFlaker/projects/jackrabbit-oak/oak-jcr";
+    String projectPath;
+    // = "/Users/guillaume.haben/Documents/Work/datasets/DeFlaker/projects/jackrabbit-oak/oak-jcr";
     // String projectPath = "/Users/guillaume.haben/Documents/Work/projects/TooTallNate/Java-WebSocket/";
     // String projectPath = "/Users/guillaume.haben/Documents/Work/projects/http-request/";
 
@@ -13,8 +15,21 @@ public class Menu {
         System.out.println("### Metric Extractor ###");
         System.out.println("########################\n");
 
+        // Project Selection
+        setProjectPath();
+
         // Menu Selection
         menuSelection();
+    }
+    public void setProjectPath() {
+        Scanner myObj = new Scanner(System.in);
+        System.out.println("Enter project sources (absolute path):");
+        this.projectPath = myObj.nextLine();
+        File f = new File(this.projectPath);
+        if (!f.exists() || !f.isDirectory()) {
+            System.out.println("Project path not found.");
+            setProjectPath();
+        }
     }
 
     public void menuSelection() throws IOException {
@@ -35,7 +50,7 @@ public class Menu {
         System.out.println("\nAnalyzing project: " + this.projectPath);
         switch (selection) {
             case 1:
-                search.listOfMethodSearch("");
+                search.listOfMethodSearch();
                 break;
             case 2:
                 search.singleMethodSearch();

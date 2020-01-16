@@ -44,33 +44,33 @@ public class Search {
 
     }
 
-//    public void listOfMethodSearch() throws IOException {
-//
-//        // Ask for file path
-//        Scanner myObj = new Scanner(System.in);
-//        System.out.println("Enter path to file with methods list inside");
-//        String path = myObj.nextLine();
-//
-//        File file = new File(path);
-//
-//        // Check if file exists
-//        if (!file.exists()) {
-//            System.out.println("File not found, please enter absolute path.");
-//            listOfMethodSearch();
-//        }
-//        else {
-//
-//            BufferedReader br = new BufferedReader(new FileReader(file));
-//
-//            String st;
-//            while ((st = br.readLine()) != null) {
-//                System.out.println(st);
-//                Search currentSearch = new Search(this.projectPath);
-//                currentSearch.getMethodFromFile(st);
-//                currentSearch.methodSearch();
-//            }
-//        }
-//    }
+    public void listOfMethodSearch() throws IOException {
+
+        // Ask for file path
+        Scanner myObj = new Scanner(System.in);
+        System.out.println("Enter path to file with methods list inside");
+        String path = myObj.nextLine();
+
+        File file = new File(path);
+
+        // Check if file exists
+        if (!file.exists()) {
+            System.out.println("File not found, please enter absolute path.");
+            listOfMethodSearch();
+        }
+        else {
+
+            BufferedReader br = new BufferedReader(new FileReader(file));
+
+            String st;
+            while ((st = br.readLine()) != null) {
+                System.out.println(st);
+                Search currentSearch = new Search(this.projectPath);
+                currentSearch.getMethodFromFile(st);
+                currentSearch.methodSearch();
+            }
+        }
+    }
 
     public void listOfMethodSearch(String listPath) throws IOException {
 
@@ -123,6 +123,9 @@ public class Search {
                         metric.showNbAsyncWaits();
                         metric.showNbAsserts();
                         metric.showNbThreads();
+                        metric.showNbDates();
+                        metric.showNbRandoms();
+                        metric.showNbFiles();
                         metric.showDepthOfInheritance();
                         metric.showAnnotations();
 
