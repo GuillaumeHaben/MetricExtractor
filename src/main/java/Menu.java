@@ -38,6 +38,7 @@ public class Menu {
         System.out.println("------------------------\n");
         System.out.println("1 - List of Methods search");
         System.out.println("2 - Method search");
+        System.out.println("3 - Get All Test Methods");
 
         // Check if input is int
         if(!input.hasNextInt()) {
@@ -54,6 +55,9 @@ public class Menu {
                 break;
             case 2:
                 search.singleMethodSearch();
+                break;
+            case 3:
+                search.getAllTestMethods();
                 break;
             default:
                 System.out.println("Please select between [1-2]");

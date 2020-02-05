@@ -149,4 +149,15 @@ public class Search {
         this.className = arrayName[arrayName.length - 2];
     }
 
+    public void getAllTestMethods() {
+        // For all classes
+        for(CtType<?> classes : this.model.getAllTypes()) {
+            // For all methods
+            for (CtMethod methods : classes.getMethods()) {
+                if (methods.getAnnotations().toString().contains("@org.junit.Test")) {
+                    System.out.println(classes.getSimpleName() + "." + methods.getSimpleName());
+                }
+            }
+        }
+    }
 }
