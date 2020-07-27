@@ -1,3 +1,5 @@
+package base;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
@@ -12,13 +14,11 @@ public class Menu {
     public Menu() throws IOException {
         // Welcome
         System.out.println("########################");
-        System.out.println("### Metric Extractor ###");
+        System.out.println("### base.Metric Extractor ###");
         System.out.println("########################\n");
-
         // Project Selection
         setProjectPath();
-
-        // Menu Selection
+        // base.Menu Selection
         menuSelection();
     }
     public void setProjectPath() {
@@ -39,10 +39,11 @@ public class Menu {
         System.out.println("1 - List of Methods search");
         System.out.println("2 - Method search");
         System.out.println("3 - Get All Test Methods");
+        System.out.println("4 - Get All Methods");
 
         // Check if input is int
         if(!input.hasNextInt()) {
-            System.out.println("Please select between [1-2]");
+            System.out.println("Please select between [1-4]");
             menuSelection();
         }
 
@@ -59,8 +60,11 @@ public class Menu {
             case 3:
                 search.getAllTestMethods();
                 break;
+            case 4:
+                search.getAllMethods();
+                break;
             default:
-                System.out.println("Please select between [1-2]");
+                System.out.println("Please select between [1-4]");
                 menuSelection();
         }
     }

@@ -1,3 +1,5 @@
+package base;
+
 import java.io.IOException;
 
 public class Main {
@@ -8,7 +10,20 @@ public class Main {
         String arg;
         String projectPath = "";
         String listPath = "";
-        String getAllTestMethods = "";
+
+        // Usage
+        if (args.length == 0) {
+            System.out.println("Usage: ./MetricExtractor.sh\n");
+            System.out.println("* INTERACTIVE *");
+            System.out.println("-interactive : Open an interactive menu\n");
+            System.out.println("* OPTION BASED *");
+            System.out.println("-projectPath : Path to the project sources. ex: -projectPath /sample/path\n");
+            System.out.println("Following options all require projectPath.");
+            System.out.println("-listPath : Path to a file.txt containing className.methodName per line. ex: -listPath /sample/list.txt");
+            System.out.println("-getAllMethods : Get Metrics for all Methods (CUT)");
+            System.out.println("-getAllTestMethods : Get Metrics for all Test Methods");
+            System.exit(0);
+        }
 
         while (i < args.length && args[i].startsWith("-")) {
             arg = args[i++];
@@ -32,13 +47,17 @@ public class Main {
                 Menu menu = new Menu();
                 System.exit(0);
             }
+            else if (arg.equals("-getAllMethods")) {
+                Search search = new Search(projectPath);
+                System.out.println("\nAnalyzing project: " + projectPath);
+                search.getAllMethods();
+                System.exit(0);
+            }
             else if (arg.equals("-getAllTestMethods")) {
-                if (i < args.length) {
-                    getAllTestMethods = args[i++];
-                } else {
-                    System.err.println("-getAllMethods requires a path");
-                    System.exit(0);
-                }
+                Search search = new Search(projectPath);
+                System.out.println("\nAnalyzing project: " + projectPath);
+                search.getAllTestMethods();
+                System.exit(0);
             }
         }
 
@@ -48,14 +67,6 @@ public class Main {
             search.listOfMethodSearch(listPath);
         }
 
-        if (!getAllTestMethods.equals("")) {
-            Search search = new Search(getAllTestMethods);
-            System.out.println("\nAnalyzing project: " + getAllTestMethods);
-            search.getAllTestMethods();
-        }
-
         System.exit(0);
-
     }
-
 }

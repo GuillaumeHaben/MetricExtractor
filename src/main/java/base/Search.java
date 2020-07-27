@@ -1,9 +1,13 @@
+package base;
+
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Search {
@@ -22,79 +26,82 @@ public class Search {
         // Creating launcher
         Launcher launcher = new Launcher();
         launcher.addInputResource(this.projectPath);
-
+        // Escape comments
+        launcher.getEnvironment().setCommentEnabled(false);
         // Creating model from project
         launcher.buildModel();
         CtModel model = launcher.getModel();
         return model;
     }
 
+    /**
+     * -INTERACTIVE- Find a particular method in the project based on a className.methodName
+     * Call methodSearch to compute metrics and generate reports
+     */
     public void singleMethodSearch() throws IOException {
-
         // ToDo Add checkers
         Scanner myObj = new Scanner(System.in);
         System.out.println("Enter method you want to analyze [format: className.methodName]");
         String fullName = myObj.nextLine();
         String[] arrayName = fullName.split("\\.");
-
         this.methodName = arrayName[arrayName.length - 1];
         this.className = arrayName[arrayName.length - 2];
-
         methodSearch();
-
     }
 
+    /**
+     * -INTERACTIVE- Find particular methods in the project based on a file
+     * Call methodSearch to compute metrics and generate reports
+     */
     public void listOfMethodSearch() throws IOException {
-
         // Ask for file path
         Scanner myObj = new Scanner(System.in);
         System.out.println("Enter path to file with methods list inside");
         String path = myObj.nextLine();
-
         File file = new File(path);
-
         // Check if file exists
         if (!file.exists()) {
             System.out.println("File not found, please enter absolute path.");
             listOfMethodSearch();
         }
         else {
-
-            BufferedReader br = new BufferedReader(new FileReader(file));
-
             String st;
+            BufferedReader br = new BufferedReader(new FileReader(file));
             while ((st = br.readLine()) != null) {
                 System.out.println(st);
-                Search currentSearch = new Search(this.projectPath);
-                currentSearch.getMethodFromFile(st);
-                currentSearch.methodSearch();
+                this.getMethodFromFile(st);
+                this.methodSearch();
             }
         }
     }
 
+    /**
+     * Find particular methods in the project based on a file
+     * Call methodSearch to compute metrics and generate reports
+     * @param listPath the file path
+     */
     public void listOfMethodSearch(String listPath) throws IOException {
-
         File file = new File(listPath);
-
         // Check if file exists
         if (!file.exists()) {
             System.out.println("-listPath: File not found, please enter absolute path.");
             System.exit(0);
         }
         else {
-
-            BufferedReader br = new BufferedReader(new FileReader(file));
-
             String st;
+            BufferedReader br = new BufferedReader(new FileReader(file));
             while ((st = br.readLine()) != null) {
-                System.out.println(st);
-                Search currentSearch = new Search(this.projectPath);
-                currentSearch.getMethodFromFile(st);
-                currentSearch.methodSearch();
+                this.getMethodFromFile(st);
+                this.methodSearch();
             }
         }
     }
 
+    /**
+     * Find a particular method in the project
+     * Compute its metrics
+     * Generate JSON report in ./results/projectName/
+     */
     public void methodSearch() throws IOException {
         Boolean classFound = false;
         Boolean methodFound = false;
@@ -111,26 +118,12 @@ public class Search {
                     if (methods.getSimpleName().equals(this.methodName)) {
                         methodFound = true;
 
-                        System.out.println("\nClass found: " + classes.getSimpleName());
-                        System.out.println("Method found: " + methods.getSimpleName());
-
                         metric.computeMetrics(methods, classes);
-
                         metric.generateReport(this.methodName, this.className.toString(), this.projectPath);
-
-                        metric.showNbLines();
-                        metric.showNbCyclo();
-                        metric.showNbAsyncWaits();
-                        metric.showNbAsserts();
-                        metric.showNbThreads();
-                        metric.showNbDates();
-                        metric.showNbRandoms();
-                        metric.showNbFiles();
-                        metric.showDepthOfInheritance();
-                        metric.showAnnotations();
-
+                        break;
                     }
                 }
+                break;
             }
         }
         // Error handlers
@@ -142,6 +135,48 @@ public class Search {
         }
     }
 
+    /**
+     * Find all test methods in the project, not empty and starting with @Test
+     * Compute their metrics
+     * Generate JSON reports in ./results/projectName/
+     */
+    public void getAllTestMethods() throws IOException {
+        Metric metric = new Metric();
+        // For all classes
+        for(CtType<?> classes : this.model.getAllTypes()) {
+            // For all methods
+            for (CtMethod methods : classes.getMethods()) {
+                if (methods.getBody() != null && methods.getAnnotations().toString().contains("@org.junit.Test")) {
+                    metric.computeMetrics(methods, classes);
+                    metric.generateReport(methods.getSimpleName(), classes.getSimpleName(), this.projectPath);
+                }
+            }
+        }
+    }
+
+    /**
+     * Find all methods in the project, not empty and not starting with @Test
+     * Compute their metrics
+     * Generate JSON reports in ./results/projectName/
+     */
+    public void getAllMethods() throws IOException {
+        Metric metric = new Metric();
+        // For all classes
+        for(CtType<?> classes : this.model.getAllTypes()) {
+            // For all methods
+            for (CtMethod methods : classes.getMethods()) {
+                if (methods.getBody() != null && !methods.getAnnotations().toString().contains("@org.junit.Test")) {
+                    metric.computeMetrics(methods, classes);
+                    metric.generateReport(methods.getSimpleName(), classes.getSimpleName(), this.projectPath);
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper, Extract Method Name and Class Name from File path
+     * Save them in Search attributes
+     */
     public void getMethodFromFile(String fullName) {
         // ToDo Add checkers
         String[] arrayName = fullName.split("\\.");
@@ -149,15 +184,4 @@ public class Search {
         this.className = arrayName[arrayName.length - 2];
     }
 
-    public void getAllTestMethods() {
-        // For all classes
-        for(CtType<?> classes : this.model.getAllTypes()) {
-            // For all methods
-            for (CtMethod methods : classes.getMethods()) {
-                if (methods.getAnnotations().toString().contains("@org.junit.Test")) {
-                    System.out.println(classes.getSimpleName() + "." + methods.getSimpleName());
-                }
-            }
-        }
-    }
 }

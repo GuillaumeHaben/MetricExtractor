@@ -1,3 +1,5 @@
+package base;
+
 import org.json.simple.JSONObject;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtMethod;
@@ -24,6 +26,7 @@ public class Metric {
     private int nbFiles;
     private int depthOfInheritance;
     private int hasTimeOutInAnnotation;
+    private String methodBody;
 
     public Metric() {
         // Arguments Initialization
@@ -37,6 +40,7 @@ public class Metric {
         this.nbFiles = 0;
         this.depthOfInheritance = 0;
         this.hasTimeOutInAnnotation = 0;
+        this.methodBody = "";
     }
 
     /**
@@ -48,16 +52,13 @@ public class Metric {
         // Compute nbLines
         String[] lines = method.getBody().toString().split("\r\n|\r|\n");
         this.nbLines = lines.length;
-
         // Compute nbCyclo
         int nbCond = method.getElements(new TypeFilter(CtIf.class)).size();
         int nbLoop = method.getElements(new TypeFilter(CtLoop.class)).size();
-
         this.nbCyclo = nbCyclo + nbCond + nbLoop;
         // Get lists of objects to go through in the next for loops.
         List listInvocations = method.getBody().getElements(new TypeFilter(CtInvocation.class));
         List listTypeReferences = method.getBody().getElements(new TypeFilter(CtTypeReference.class));
-
         // Compute nbAsyncWaits and nbAsserts
         for (Object inv : listInvocations) {
             String invocation = inv.toString();
@@ -65,7 +66,6 @@ public class Metric {
             // List of methods coming from org.junit.Assert
             if (invocation.contains("org.junit.Assert") ) this.nbAsserts++;
         }
-
         // Compute nbThreads, nbDates, nbRandoms, nbFiles
         for (Object inv : listTypeReferences) {
             String invocation = inv.toString();
@@ -74,14 +74,14 @@ public class Metric {
             if (invocation.contains("java.util.Random")) this.nbRandoms++;
             if (invocation.contains("java.io.File")) this.nbFiles++;
         }
-
         // Compute hasTimeOutAnnotations
         if (method.getAnnotations().toString().contains("timeout")) {
             this.hasTimeOutInAnnotation = 1;
         }
-
         // Compute depthOfInheritance
         this.depthOfInheritance = getDepthOfInheritanceTree(myClass.getReference());
+        // Get method's body
+        this.methodBody = method.getBody().toString();
     }
 
     /**
@@ -102,8 +102,9 @@ public class Metric {
      * @throws IOException
      */
     public void generateReport(String methodName, String className, String projectPath) throws IOException {
+        // Create JSON object
         JSONObject sampleObject = new JSONObject();
-
+        // Populate JSON object
         sampleObject.put("ProjectName", projectPath);
         sampleObject.put("ClassName", className);
         sampleObject.put("MethodName", methodName);
@@ -117,51 +118,12 @@ public class Metric {
         sampleObject.put("NumberOfFiles", this.nbFiles);
         sampleObject.put("DepthOfInheritance", this.depthOfInheritance);
         sampleObject.put("HasTimeoutInAnnotations", this.hasTimeOutInAnnotation);
-
+        sampleObject.put("Body", this.methodBody);
+        // Create Directory
         String[] arrayName = projectPath.split("/");
         String projectName = arrayName[arrayName.length - 1];
         new File("/Users/guillaume.haben/Documents/Work/projects/MetricExtractor/results/" + projectName).mkdirs();
-
+        // Write JSON file into the newly created directory
         Files.write(Paths.get("/Users/guillaume.haben/Documents/Work/projects/MetricExtractor/results/" + projectName + "/" + className + "." + methodName + ".json"), sampleObject.toJSONString().getBytes());
-    }
-
-    public void showNbLines() {
-        System.out.println("Number of lines: " +  this.nbLines);
-    }
-
-    public void showAnnotations() {
-        System.out.println("Has timeout in Annotations: " + this.hasTimeOutInAnnotation);
-    }
-
-    public void showNbCyclo() {
-        System.out.println("Cyclomatic complexity: " + this.nbCyclo);
-    }
-
-    public void showNbAsyncWaits() {
-        System.out.println("Number of Asynchronous waits: " + this.nbAsyncWaits);
-    }
-
-    public void showNbAsserts() {
-        System.out.println("Number of Asserts: " + this.nbAsserts);
-    }
-
-    public void showNbThreads() {
-        System.out.println("Number of Threads: " + this.nbThreads);
-    }
-
-    public void showNbDates() {
-        System.out.println("Number of Dates: " + this.nbDates);
-    }
-
-    public void showNbRandoms() {
-        System.out.println("Number of Randoms: " + this.nbRandoms);
-    }
-
-    public void showNbFiles() {
-        System.out.println("Number of Files: " + this.nbFiles);
-    }
-
-    public void showDepthOfInheritance() {
-        System.out.println("Depth of Inheritance: " + this.depthOfInheritance);
     }
 }

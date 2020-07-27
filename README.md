@@ -1,5 +1,5 @@
 # MetricExtractor
-Java Code Metric Extractor 
+Java Code base.Metric Extractor 
 
 MetricExtractor aims to extract features from source code. 
 More precisely, it gives information about a given method in a project.
@@ -23,15 +23,15 @@ The ultimate goal is to use those features as metrics to associate a method
 
 ### Usage
 
-- Set `projectPath` in `src/main/java/Main.java` to the Java project you wish to analyze.
-- Run `Main.java`
+- Set `projectPath` in `src/main/java/base.Main.java` to the Java project you wish to analyze.
+- Run `base.Main.java`
 
 ### Work in Progress
 
 - [ ] Explore control flow further until invoked method is no longer in the (a?) test class.
 - [ ] Test your code
 - [ ] Refactor code
-- [x] Add Search by list of methods
+- [x] Add base.Search by list of methods
 - [x] Add Depth of Inheritance metric
 
 ### Miscellaneous
