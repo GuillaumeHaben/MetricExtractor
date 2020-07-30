@@ -141,11 +141,11 @@ public class Search {
      * Generate JSON reports in ./results/projectName/
      */
     public void getAllTestMethods() throws IOException {
-        Metric metric = new Metric();
         // For all classes
         for(CtType<?> classes : this.model.getAllTypes()) {
             // For all methods
             for (CtMethod methods : classes.getMethods()) {
+                Metric metric = new Metric();
                 if (methods.getBody() != null && methods.getAnnotations().toString().contains("@org.junit.Test")) {
                     metric.computeMetrics(methods, classes);
                     metric.generateReport(methods.getSimpleName(), classes.getSimpleName(), this.projectPath);
@@ -160,11 +160,11 @@ public class Search {
      * Generate JSON reports in ./results/projectName/
      */
     public void getAllMethods() throws IOException {
-        Metric metric = new Metric();
         // For all classes
         for(CtType<?> classes : this.model.getAllTypes()) {
             // For all methods
             for (CtMethod methods : classes.getMethods()) {
+                Metric metric = new Metric();
                 if (methods.getBody() != null && !methods.getAnnotations().toString().contains("@org.junit.Test")) {
                     metric.computeMetrics(methods, classes);
                     metric.generateReport(methods.getSimpleName(), classes.getSimpleName(), this.projectPath);
