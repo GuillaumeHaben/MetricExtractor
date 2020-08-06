@@ -28,9 +28,8 @@ The ultimate goal is to use those features as metrics to associate a method
 
 ### Work in Progress
 
-- [ ] Explore control flow further until invoked method is no longer in the (a?) test class.
 - [ ] Test your code
-- [ ] Refactor code
+- [x] Refactor code
 - [x] Add base.Search by list of methods
 - [x] Add Depth of Inheritance metric
 

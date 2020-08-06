@@ -146,6 +146,11 @@ public class Search {
             // For all methods
             for (CtMethod methods : classes.getMethods()) {
                 Metric metric = new Metric();
+                /*
+                Looking for Code Under Test, I want
+                Method's body not empty
+                A @test annotation
+                 */
                 if (methods.getBody() != null && methods.getAnnotations().toString().contains("@org.junit.Test")) {
                     metric.computeMetrics(methods, classes);
                     metric.generateReport(methods.getSimpleName(), classes.getSimpleName(), this.projectPath);
@@ -165,7 +170,13 @@ public class Search {
             // For all methods
             for (CtMethod methods : classes.getMethods()) {
                 Metric metric = new Metric();
-                if (methods.getBody() != null && !methods.getAnnotations().toString().contains("@org.junit.Test")) {
+                /*
+                Looking for Code Under Test, I want
+                Method's body not empty
+                No @test annotation
+                No ClassName starting or ending with "Test"
+                 */
+                if (methods.getBody() != null && !methods.getAnnotations().toString().contains("@org.junit.Test") && !classes.getSimpleName().startsWith("Test") && !classes.getSimpleName().endsWith("Test")) {
                     metric.computeMetrics(methods, classes);
                     metric.generateReport(methods.getSimpleName(), classes.getSimpleName(), this.projectPath);
                 }
