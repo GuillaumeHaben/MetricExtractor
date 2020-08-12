@@ -9,8 +9,10 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Metric {
@@ -27,6 +29,7 @@ public class Metric {
     private int depthOfInheritance;
     private int hasTimeOutInAnnotation;
     private String methodBody;
+    private ArrayList<String> listInvocationsString;
 
     public Metric() {
         // Arguments Initialization
@@ -41,6 +44,7 @@ public class Metric {
         this.depthOfInheritance = 0;
         this.hasTimeOutInAnnotation = 0;
         this.methodBody = "";
+        this.listInvocationsString = new ArrayList<String>();
     }
 
     /**
@@ -52,27 +56,54 @@ public class Metric {
         // Compute nbLines
         String[] lines = method.getBody().toString().split("\r\n|\r|\n");
         this.nbLines = lines.length;
+
         // Compute nbCyclo
         int nbCond = method.getElements(new TypeFilter(CtIf.class)).size();
         int nbLoop = method.getElements(new TypeFilter(CtLoop.class)).size();
         this.nbCyclo = nbCyclo + nbCond + nbLoop;
+
         // Get lists of objects to go through in the next for loops.
-        List listInvocations = method.getBody().getElements(new TypeFilter(CtInvocation.class));
+        List<CtInvocation> listInvocations = method.getBody().getElements(new TypeFilter(CtInvocation.class));
+        List<CtConstructorCall> listConstructorCall = method.getBody().getElements(new TypeFilter(CtConstructorCall.class));
         List listTypeReferences = method.getBody().getElements(new TypeFilter(CtTypeReference.class));
+
         // Compute nbAsyncWaits and nbAsserts
-        for (Object inv : listInvocations) {
+        for (CtInvocation inv : listInvocations) {
             String invocation = inv.toString();
+            String className = inv.getExecutable().getDeclaringType().getSimpleName();
+            String methodName = inv.getExecutable().getSimpleName();
+            String saveName = className + "." + methodName;
+
+            // List of invocations
+            if (!this.listInvocationsString.contains(saveName)) {
+                this.listInvocationsString.add(saveName);
+            }
+
             if (invocation.contains("Thread.sleep(") || invocation.contains(".wait(")) this.nbAsyncWaits++;
             // List of methods coming from org.junit.Assert
             if (invocation.contains("org.junit.Assert") ) this.nbAsserts++;
+
+        }
+        for (CtConstructorCall constr : listConstructorCall) {
+            // List of invocations, for constructors
+            String className = constr.getExecutable().getDeclaringType().getSimpleName();
+            String methodName = constr.getExecutable().getSimpleName();
+            String saveName = className + "." + methodName;
+
+            // List of invocations
+            if (!this.listInvocationsString.contains(saveName)) {
+                this.listInvocationsString.add(saveName);
+            }
         }
         // Compute nbThreads, nbDates, nbRandoms, nbFiles
-        for (Object inv : listTypeReferences) {
-            String invocation = inv.toString();
-            if (invocation.contains("java.lang.Thread") || invocation.contains("java.util.concurrent")) this.nbThreads++;
-            if (invocation.contains("java.util.Date") || invocation.contains("java.util.TimeZone")) this.nbDates++;
-            if (invocation.contains("java.util.Random")) this.nbRandoms++;
-            if (invocation.contains("java.io.File")) this.nbFiles++;
+        for (Object type : listTypeReferences) {
+            String typeRef = type.toString();
+
+            if (typeRef.contains("java.lang.Thread") || typeRef.contains("java.util.concurrent")) this.nbThreads++;
+            if (typeRef.contains("java.util.Date") || typeRef.contains("java.util.TimeZone")) this.nbDates++;
+            if (typeRef.contains("java.util.Random")) this.nbRandoms++;
+            if (typeRef.contains("java.io.File")) this.nbFiles++;
+
         }
         // Compute hasTimeOutAnnotations
         if (method.getAnnotations().toString().contains("timeout")) {
@@ -82,6 +113,7 @@ public class Metric {
         this.depthOfInheritance = getDepthOfInheritanceTree(myClass.getReference());
         // Get method's body
         this.methodBody = method.getBody().toString();
+
     }
 
     /**
@@ -119,6 +151,8 @@ public class Metric {
         sampleObject.put("DepthOfInheritance", this.depthOfInheritance);
         sampleObject.put("HasTimeoutInAnnotations", this.hasTimeOutInAnnotation);
         sampleObject.put("Body", this.methodBody);
+        sampleObject.put("ListInvocations", this.listInvocationsString);
+
         // Create Directory
         String[] arrayName = projectPath.split("/");
         String projectName = arrayName[arrayName.length - 1];
