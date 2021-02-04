@@ -108,17 +108,18 @@ public class Search {
         Metric metric = new Metric();
 
         // For all classes
-        for(CtType<?> classes : this.model.getAllTypes()) {
+        for(CtType<?> currentClass : this.model.getAllTypes()) {
             // Match class name
-            if (classes.getSimpleName().equals(this.className)) {
+            if (currentClass.getSimpleName().equals(this.className)) {
                 classFound = true;
                 // For all methods
-                for(CtMethod methods : classes.getMethods()) {
+                for(CtMethod currentMethod : currentClass.getMethods()) {
                     // Match method name
-                    if (methods.getSimpleName().equals(this.methodName)) {
+                    if (currentMethod.getSimpleName().equals(this.methodName)) {
                         methodFound = true;
 
-                        metric.computeMetrics(methods, classes);
+                        metric.computeMetrics(currentMethod, currentClass);
+                        metric.computeCUTMetrics(currentMethod, currentClass);
                         metric.generateReport(this.methodName, this.className.toString(), this.projectPath);
                         break;
                     }
@@ -142,18 +143,19 @@ public class Search {
      */
     public void getAllTestMethods() throws IOException {
         // For all classes
-        for(CtType<?> classes : this.model.getAllTypes()) {
+        for(CtType<?> currentClass : this.model.getAllTypes()) {
             // For all methods
-            for (CtMethod methods : classes.getMethods()) {
+            for (CtMethod currentMethod : currentClass.getMethods()) {
                 Metric metric = new Metric();
                 /*
                 Looking for Code Under Test, I want
                 Method's body not empty
                 A @test annotation
                  */
-                if (methods.getBody() != null && methods.getAnnotations().toString().contains("@org.junit.Test")) {
-                    metric.computeMetrics(methods, classes);
-                    metric.generateReport(methods.getSimpleName(), classes.getSimpleName(), this.projectPath);
+                if (currentMethod.getBody() != null && currentMethod.getAnnotations().toString().contains("@org.junit.Test")) {
+                    metric.computeMetrics(currentMethod, currentClass);
+                    metric.computeCUTMetrics(currentMethod, currentClass);
+                    metric.generateReport(currentMethod.getSimpleName(), currentClass.getSimpleName(), this.projectPath);
                 }
             }
         }
@@ -166,9 +168,9 @@ public class Search {
      */
     public void getAllMethods() throws IOException {
         // For all classes
-        for(CtType<?> classes : this.model.getAllTypes()) {
+        for(CtType<?> currentClass : this.model.getAllTypes()) {
             // For all methods
-            for (CtMethod methods : classes.getMethods()) {
+            for (CtMethod currentMethod : currentClass.getMethods()) {
                 Metric metric = new Metric();
                 /*
                 Looking for Code Under Test, I want
@@ -176,9 +178,10 @@ public class Search {
                 No @test annotation
                 No ClassName starting or ending with "Test"
                  */
-                if (methods.getBody() != null && !methods.getAnnotations().toString().contains("@org.junit.Test") && !classes.getSimpleName().startsWith("Test") && !classes.getSimpleName().endsWith("Test")) {
-                    metric.computeMetrics(methods, classes);
-                    metric.generateReport(methods.getSimpleName(), classes.getSimpleName(), this.projectPath);
+                if (currentMethod.getBody() != null && !currentMethod.getAnnotations().toString().contains("@org.junit.Test") && !currentClass.getSimpleName().startsWith("Test") && !currentClass.getSimpleName().endsWith("Test")) {
+                    metric.computeMetrics(currentMethod, currentClass);
+                    metric.computeCUTMetrics(currentMethod, currentClass);
+                    metric.generateReport(currentMethod.getSimpleName(), currentClass.getSimpleName(), this.projectPath);
                 }
             }
         }

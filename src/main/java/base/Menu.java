@@ -14,7 +14,7 @@ public class Menu {
     public Menu() throws IOException {
         // Welcome
         System.out.println("########################");
-        System.out.println("### base.Metric Extractor ###");
+        System.out.println("### Metric Extractor ###");
         System.out.println("########################\n");
         // Project Selection
         setProjectPath();
